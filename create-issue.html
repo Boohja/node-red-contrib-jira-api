@@ -1,0 +1,215 @@
+<script type="text/javascript">
+  RED.nodes.registerType("jira-create-issue", {
+    category: "Jira",
+    color: "#4a698a",
+    icon: "jira.svg",
+    defaults: {
+      name: { value: null },
+      server: { value: "", type: "jira-server", required: true },
+      project: { value: "", required: true },
+      summary: { value: "", required: true },
+      description: { value: "" },
+      issuetype: { value: "Task", required: true },
+      labels: { value: "", required: true },
+      components: { value: "", required: true },
+      // advanced fields
+      fields: { value: null },
+      properties: { value: null },
+      update: { value: null },
+      historyMetadata: { value: null },
+    },
+    outputLabels: ["success", "error"],
+    inputs: 1,
+    outputs: 2,
+    label: function () {
+      return this.name || "create issue";
+    },
+    paletteLabel: "create issue",
+  });
+</script>
+
+<script type="text/html" data-template-name="jira-create-issue">
+  <div class="form-row">
+    <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+    <input type="text" id="node-input-server" />
+  </div>
+  <hr />
+  <div class="form-row">
+    <label for="node-input-project"
+      ><i class="fa fa-folder"></i> Project Key</label
+    >
+    <input type="text" id="node-input-project" placeholder="e.g. PROJ" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-summary"><i class="fa fa-header"></i> Summary</label>
+    <input type="text" id="node-input-summary" placeholder="Issue summary" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-description"
+      ><i class="fa fa-align-left"></i> Description</label
+    >
+    <input
+      type="text"
+      id="node-input-description"
+      placeholder="Issue description"
+    />
+  </div>
+  <div class="form-row">
+    <label for="node-input-issuetype"
+      ><i class="fa fa-list"></i> Issue Type</label
+    >
+    <input type="text" id="node-input-issuetype" placeholder="e.g. Task, Bug" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-labels"><i class="fa fa-tags"></i> Labels</label>
+    <input type="text" id="node-input-labels" placeholder="Comma separated" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-components"
+      ><i class="fa fa-cubes"></i> Components</label
+    >
+    <input
+      type="text"
+      id="node-input-components"
+      placeholder="Comma separated"
+    />
+  </div>
+  <hr />
+  <!-- Advanced fields for power users -->
+  <div class="form-row">
+    <label for="node-input-fields"
+      ><i class="fa fa-list"></i> Advanced Fields (JSON)</label
+    >
+    <input type="text" id="node-input-fields" placeholder="msg.fields (JSON)" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-properties"
+      ><i class="fa fa-list"></i> Properties</label
+    >
+    <input
+      type="text"
+      id="node-input-properties"
+      placeholder="msg.properties"
+    />
+  </div>
+  <div class="form-row">
+    <label for="node-input-update"><i class="fa fa-list"></i> Update</label>
+    <input type="text" id="node-input-update" placeholder="msg.update" />
+  </div>
+  <div class="form-row">
+    <label for="node-input-historyMetadata"
+      ><i class="fa fa-list"></i> History Metadata</label
+    >
+    <input
+      type="text"
+      id="node-input-historyMetadata"
+      placeholder="msg.historyMetadata"
+    />
+  </div>
+</script>
+
+<script type="text/html" data-help-name="jira-create-issue">
+  <h3>Description</h3>
+  <p>
+    This node allows you to create a new Jira issue in a simple and intuitive
+    way. Just fill in the basic fields, you do not need to provide the entire
+    JSON object.
+  </p>
+
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt>msg.project <span class="property-type">string</span></dt>
+    <dd>
+      Project key, e.g. <code>PROJ</code>. If not set in the message, the value
+      from the node configuration will be used.
+    </dd>
+
+    <dt>msg.summary <span class="property-type">string</span></dt>
+    <dd>Issue summary (title).</dd>
+
+    <dt class="optional">
+      msg.description <span class="property-type">string</span>
+    </dt>
+    <dd>Issue description.</dd>
+
+    <dt class="optional">
+      msg.issuetype <span class="property-type">string</span>
+    </dt>
+    <dd>
+      Issue type, e.g. <code>Task</code>, <code>Bug</code>, <code>Story</code>.
+    </dd>
+
+    <dt class="optional">
+      msg.labels <span class="property-type">string</span>
+    </dt>
+    <dd>Labels, comma separated (e.g. <code>frontend,urgent</code>).</dd>
+
+    <dt class="optional">
+      msg.components <span class="property-type">string</span>
+    </dt>
+    <dd>Components, comma separated (e.g. <code>API,UI</code>).</dd>
+
+    <dt class="optional">
+      msg.fields <span class="property-type">object | string</span>
+    </dt>
+    <dd>Advanced settings – a JSON object that overrides the basic fields.</dd>
+
+    <dt class="optional">
+      msg.properties <span class="property-type">object | string</span>
+    </dt>
+    <dd>Issue properties.</dd>
+
+    <dt class="optional">
+      msg.update <span class="property-type">object | string</span>
+    </dt>
+    <dd>Mapping of fields and operations to perform on the issue.</dd>
+
+    <dt class="optional">
+      msg.historyMetadata <span class="property-type">object | string</span>
+    </dt>
+    <dd>Additional issue history details.</dd>
+  </dl>
+
+  <h3>Outputs</h3>
+  <ol class="node-ports">
+    <li>
+      Success
+      <dl class="message-properties">
+        <dt>msg.payload <span class="property-type">object</span></dt>
+        <dd>The created Jira issue.</dd>
+      </dl>
+    </li>
+    <li>
+      Error
+      <dl class="message-properties">
+        <dt>msg.error <span class="property-type">string</span></dt>
+        <dd>Error description, if any occurred.</dd>
+      </dl>
+    </li>
+  </ol>
+
+  <h3>Example usage</h3>
+  <pre>
+{
+  "project": "PROJ",
+  "summary": "New issue from Node-RED",
+  "description": "Issue description",
+  "issuetype": "Task",
+  "labels": "frontend,urgent",
+  "components": "API,UI"
+}
+  </pre
+  >
+
+  <h3>API Reference</h3>
+  <a
+    href="https://developer.atlassian.com/cloud/jira/platform/rest/v2/api-group-issues/#api-rest-api-2-issue-post"
+    target="_blank"
+  >
+    Jira REST API: Create Issue
+  </a>
+</script>
